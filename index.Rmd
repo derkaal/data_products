@@ -1,0 +1,66 @@
+---
+title       : Sales forecast
+subtitle    : Course project
+author      : Andreas Donath
+job         : 
+framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      # 
+widgets     : []            # {mathjax, quiz, bootstrap}
+mode        : selfcontained # {standalone, draft}
+knit        : slidify::knit2slides
+---
+
+## Summary
+
+This presentation shows the sales forecast for a fictious company, compiled as an interactive shiny app.  
+
+Starting in 2013, sales are given on a monthly basis until January 2015. Sales until mid 2017 are then forecasted.  
+
+Additionally sales for February - April 2015 can be entered manually.
+
+The initial sales numbers are held very simple to give a better understanding of the changes of the values entered manually.
+
+--- .class #id 
+
+## Setup
+
+First, a time fixed series of sales is created, using the "ts" command from the package "library".
+```{r setup, echo=TRUE, results='markup'}
+previousSales<-c(100,80,80,80,50,50,50,80,80,80,90,90,
+                 120,90,90,90,60,60,60,90,90,90,100,100,
+                 130,90,100,120)
+library(forecast)
+ts<-ts(previousSales,start=c(2013,01),frequency=12)
+#resulting time series:
+ts
+```
+
+The values from February - April 15 are initially set to 90, 100 and 120 but can be changed manually using the boxes on the left on the shinyapp. The time series will be updated instantly.
+
+--- .class #id 
+
+
+## forecasting
+
+Next, a forecast is build on the resulting time series:
+```{r forecasting, echo=TRUE, results='markup'}
+fit<-stl(ts,s.window="period",t.window=12,robust=TRUE)
+fcast<-forecast(ts)
+
+#resulting point forecast
+fcast$mean
+```
+
+
+--- .class #id 
+
+## visualization
+
+To provide a better visualization of the timeseries and the forecast, a chart is also 
+provided below the tables.
+
+```{r chart, echo=FALSE, results='markup'}
+plot(fcast,ylab="Sales in Mio US$")
+```
+--- .class #id 
